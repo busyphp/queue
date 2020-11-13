@@ -1,0 +1,15 @@
+/.idea/
+/app/
+/config/
+/public/
+/vendor/
+/runtime/
+/core/
+/extend/
+.DS_Store
+composer.lock
+think
+composer.json.dev
+composer.json.bak
+.env
+说明文档.md
