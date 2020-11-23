@@ -14,9 +14,10 @@ interface QueueDriveInterface
      * 入队
      * @param string $handler 任务处理类名
      * @param mixed  $data 存储的序列化数据
+     * @param int    $execTime 执行时间，0为立即执行
      * @return mixed|void
      */
-    public function joinQueue($handler, $data);
+    public function joinQueue($handler, $data, $execTime = 0);
     
     
     /**

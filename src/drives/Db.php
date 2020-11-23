@@ -21,14 +21,16 @@ class Db extends Model implements QueueDriveInterface
     /**
      * 入队
      * @param string $handler 任务处理类名
-     * @param mixed  $data
+     * @param mixed  $data 执行的数据
+     * @param int    $execTime 执行时间，0为立即执行
      * @return int
      * @throws SQLException
      */
-    public function joinQueue($handler, $data)
+    public function joinQueue($handler, $data, $execTime = 0)
     {
         if (!$insertId = $this->addData([
             'create_time' => time(),
+            'exec_time'   => $execTime,
             'params'      => serialize([
                 'handler' => $handler,
                 'data'    => $data,
@@ -50,7 +52,12 @@ class Db extends Model implements QueueDriveInterface
     {
         $this->startTrans();
         try {
-            $list = $this->field('id,params')->lock(true)->order('id ASC')->limit($limit)->selectList();
+            $list = $this->field('id,params')
+                ->lock(true)
+                ->where('exec_time', '<', time())
+                ->order('id ASC')
+                ->limit($limit)
+                ->selectList();
             
             // 删除列队
             if ($list) {

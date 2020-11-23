@@ -46,17 +46,18 @@ class Queue
      * 入队
      * @param string $handler 单列处理类名
      * @param mixed  $data 要处理的数据
+     * @param int    $execTime 开始执行时间，默认立即执行
      * @return mixed|void
      * @throws QueueException
      */
-    public function join(string $handler, $data)
+    public function join(string $handler, $data, $execTime = 0)
     {
         $face = QueueHandlerInterfaces::class;
         if (!is_subclass_of($handler, $face)) {
             throw new QueueException("列队处理类 [{$handler}] 必须集成 [{$face}] 接口");
         }
         
-        return $this->getDrives()->joinQueue($handler, $data);
+        return $this->getDrives()->joinQueue($handler, $data, $execTime);
     }
     
     
@@ -120,12 +121,18 @@ class Queue
             return true;
         }
         
+        $execTime = 0;
+        if ($data instanceof QueueExecResult) {
+            $execTime = $data->getExecTime();
+            $data     = $data->getData();
+        }
+        
         // 重新入队
         try {
             $errors = implode(', ', $api->getErrors());
             $errors = $errors ?: '--';
             self::log("列队重新入队, 原因: {$errors}");
-            $this->join($handler, $data);
+            $this->join($handler, $data, $execTime);
         } catch (Exception $e) {
             self::log("列队入队失败: {$e->getMessage()}");
         }
