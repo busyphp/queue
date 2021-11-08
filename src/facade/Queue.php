@@ -11,10 +11,11 @@ use think\Facade;
  * @version $Id: 2020/11/12 下午10:34 下午 Queue.php $
  * @mixin \BusyPHP\queue\Queue
  * @see \BusyPHP\queue\Queue
- * @method static mixed|void join(string $handler, $data, $execTime = 0) 将数据加入队列，该方法会抛出异常
- * @method static array takeList(int $limit = 100) 取出一批队列
+ * @method static string push(string|object $handler, mixed $data, int $delaySecond = 0) 将数据加入队列
+ * @method static array pull(int $limit = 100) 取出一批队列
+ * @method static array get() 取出一条队列
+ * @method static bool run($handler, $data = null) 执行一条队列
  * @method static void batch(array $list) 批量执行一批队列
- * @method static bool exec($handler, $data = null) 执行一条队列
  */
 class Queue extends Facade
 {

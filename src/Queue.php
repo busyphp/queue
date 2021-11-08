@@ -3,11 +3,13 @@
 namespace BusyPHP\queue;
 
 use BusyPHP\App;
-use BusyPHP\helper\util\Arr;
-use BusyPHP\helper\util\Str;
-use BusyPHP\queue\interfaces\QueueDriveInterface;
-use BusyPHP\queue\interfaces\QueueHandlerInterfaces;
-use Exception;
+use BusyPHP\exception\ClassNotFoundException;
+use BusyPHP\exception\ClassNotImplementsException;
+use BusyPHP\helper\StringHelper;
+use BusyPHP\queue\contract\QueueDriveInterface;
+use BusyPHP\queue\contract\QueueJobInterfaces;
+use BusyPHP\queue\task\Job;
+use RuntimeException;
 use think\facade\Log;
 
 /**
@@ -33,9 +35,9 @@ class Queue
     protected $drives = [];
     
     
-    public function __construct()
+    public function __construct(App $app)
     {
-        $this->app = app();
+        $this->app = $app;
         $this->app->bind(QueueDriveInterface::class, function() {
             return $this->getDrives();
         });
@@ -44,20 +46,24 @@ class Queue
     
     /**
      * 入队
-     * @param string $handler 单列处理类名
-     * @param mixed  $data 要处理的数据
-     * @param int    $execTime 开始执行时间，默认立即执行
-     * @return mixed|void
-     * @throws QueueException
+     * @param string|object $handler 队列处理类名或自定义处理器
+     * @param mixed         $data 要处理的数据
+     * @param int           $delaySecond 延迟执行秒数
+     * @return string
      */
-    public function join(string $handler, $data, $execTime = 0)
+    public function push($handler, $data = null, int $delaySecond = 0)
     {
-        $face = QueueHandlerInterfaces::class;
-        if (!is_subclass_of($handler, $face)) {
-            throw new QueueException("列队处理类 [{$handler}] 必须集成 [{$face}] 接口");
+        if (!is_subclass_of($handler, QueueJobInterfaces::class)) {
+            throw new ClassNotImplementsException($handler, QueueJobInterfaces::class);
         }
         
-        return $this->getDrives()->joinQueue($handler, $data, $execTime);
+        if (is_object($handler)) {
+            $payload = $handler;
+        } else {
+            $payload = new Job($handler, $data);
+        }
+        
+        return $this->getDrives()->push(serialize($payload), $delaySecond);
     }
     
     
@@ -66,95 +72,78 @@ class Queue
      * @param int $limit 取出数量
      * @return array
      */
-    public function takeList($limit = 100) : array
+    public function pull($limit = 100) : array
     {
-        try {
-            return $this->getDrives()->takeQueueList($limit);
-        } catch (QueueException $e) {
-            self::log($e->getMessage());
-            
-            return [];
-        }
+        return $this->getDrives()->pull($limit);
+    }
+    
+    
+    /**
+     * 获取一条队列信息
+     * @return array
+     */
+    public function get() : array
+    {
+        return $this->pull(1)[0] ?? [];
     }
     
     
     /**
      * 执行一条队列
-     * @param string|mixed $handler 单列处理类名或数据
-     * @param mixed        $data 要处理的数据
-     * @return bool
+     * @param array $info
      */
-    public function exec($handler, $data = null)
+    public function run(array $info)
     {
-        if (is_array($handler) && is_null($data)) {
-            if (!Arr::isAssoc($handler)) {
-                self::log("处理数据必须是键值对数组");
-                
-                return false;
-            }
+        $info['payload'] = $info['payload'] ?? null;
+        if (!$info['payload']) {
+            return;
+        }
+        
+        // 推到事件中执行
+        if (!$info['payload'] instanceof Job) {
+            $this->app->event->trigger('busyphp.queue.run', [$info['payload'], $info['id'] ?? null]);
             
-            $data    = $handler['data'];
-            $handler = $handler['handler'];
+            return;
         }
         
-        $api = null;
-        try {
-            if (!$handler || !class_exists($handler)) {
-                throw new QueueException("单列处理类 [{$handler}] 不存在");
-            }
-            
-            $api = new $handler();
-            if (!is_subclass_of($api, QueueHandlerInterfaces::class)) {
-                $face = QueueHandlerInterfaces::class;
-                throw new QueueException("单列处理类 [{$handler}] 没有集成 [{$face}] 接口");
-            }
-        } catch (Exception $e) {
-            self::log("列队执行失败: {$e->getMessage()}");
-            
-            return false;
+        $job     = $info['payload'];
+        $handler = $job->getHandler();
+        if (!$handler) {
+            throw new RuntimeException('Queue processing class not defined');
         }
         
-        
-        // 执行列队任务
-        $data = $api->handle($data);
-        if ($data === true) {
-            return true;
+        if (!class_exists($handler)) {
+            throw new ClassNotFoundException($handler);
         }
         
-        $execTime = 0;
-        if ($data instanceof QueueExecResult) {
-            $execTime = $data->getExecTime();
-            $data     = $data->getData();
+        if (!is_subclass_of($handler, QueueJobInterfaces::class)) {
+            throw new ClassNotImplementsException($handler, QueueJobInterfaces::class);
         }
         
-        // 重新入队
-        try {
-            $errors = implode(', ', $api->getErrors());
-            $errors = $errors ?: '--';
-            self::log("列队重新入队, 原因: {$errors}");
-            $this->join($handler, $data, $execTime);
-        } catch (Exception $e) {
-            self::log("列队入队失败: {$e->getMessage()}");
+        /** @var QueueJobInterfaces $object */
+        $object = $this->app->invokeClass($handler);
+        
+        /** @see Job::setRetry() */
+        $this->app->invokeMethod([$job, 'setRetry'], [1], true);
+        $object->run($job);
+        
+        // 标记删除
+        if ($job->isDestroy()) {
+            return;
         }
         
-        return false;
+        $this->getDrives()->push(serialize($job), $job->getDelay());
     }
     
     
     /**
      * 批量执行一批队列
-     * @param array $list 队列数据由{@see Queue::takeList()}取出来的队列
+     * @param array $list 队列数据由{@see Queue::pull()}取出来的队列
      */
     public function batch(array $list)
     {
-        if (Arr::isAssoc($list)) {
-            self::log("批量执行的数据必须是数字索引数组");
-            
-            return;
-        }
-        
         foreach ($list as $item) {
-            $this->exec($item);
+            $this->run($item);
         }
     }
     
@@ -163,7 +152,6 @@ class Queue
      * 获取列队驱动
      * @param string $type
      * @return QueueDriveInterface
-     * @throws QueueException
      */
     public function getDrives($type = '') : QueueDriveInterface
     {
@@ -171,19 +159,17 @@ class Queue
             return $this->drives[$type];
         }
         
-        $type = $this->getQueueConfig('type', '');
-        $type = $type ?: 'db';
+        $type = $this->getQueueConfig('type', '') ?: 'db';
         if (false === strpos($type, '\\')) {
-            $type = $this->namespace . ucfirst(Str::camel($type));
+            $type = $this->namespace . ucfirst(StringHelper::camel($type));
         }
         
         if (!class_exists($type)) {
-            throw new QueueException("列队驱动不存在: {$type}");
+            throw new ClassNotFoundException($type);
         }
         
         if (!is_subclass_of($type, QueueDriveInterface::class)) {
-            $face = QueueDriveInterface::class;
-            throw new QueueException("列队驱动类 [{$type}] 必须集成 [{$face}] 接口");
+            throw new ClassNotImplementsException($type, QueueJobInterfaces::class);
         }
         
         $this->drives[$type] = new $type;
