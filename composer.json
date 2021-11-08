@@ -29,7 +29,16 @@
 	"extra"       : {
 		"busyphp" : {
 			"manager"  : {
-				"name" : "消费队列模块"
+				"name" : "消费队列模块",
+				"class": "BusyPHP\\queue\\app\\controller\\ManagerController",
+				"install" : {
+					"install_operate"   : {
+						"request_confirm" : "确认要安装 <code>__package__</code> 吗？<div class=text-gray>注意：安装会覆盖数据库中的 <code>*_system_queue</code> 表</div>"
+					},
+					"uninstall_operate" : {
+						"request_confirm" : "确认要卸载 <code>__package__</code> 吗？<div class=text-gray>注意：卸载会删除数据库中的 <code>*_system_queue</code> 表</div>"
+					}
+				}
 			},
 			"config"   : {
 				"queue" : "src/config/config.php"
