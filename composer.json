@@ -28,12 +28,15 @@
 	},
 	"extra"       : {
 		"busyphp" : {
-			"manager" : {
+			"manager"  : {
 				"name" : "消费队列模块"
 			},
-			"config"  : {
+			"config"   : {
 				"queue" : "src/config/config.php"
-			}
+			},
+			"services" : [
+				"BusyPHP\\queue\\Service"
+			]
 		}
 	},
 	"config"      : {
