@@ -29,6 +29,12 @@ class Job
     private $destroy = false;
     
     /**
+     * 是否重新发布
+     * @var bool
+     */
+    private $release = false;
+    
+    /**
      * @var string
      */
     private $handler;
@@ -56,7 +62,7 @@ class Job
      * 设为销毁
      * @return $this
      */
-    public function setDestroy() : self
+    public function destroy() : self
     {
         $this->destroy = true;
         
@@ -75,19 +81,6 @@ class Job
     
     
     /**
-     * 设置延迟执行秒数
-     * @param int $second
-     * @return $this
-     */
-    public function setDelay(int $second) : self
-    {
-        $this->delay = $second;
-        
-        return $this;
-    }
-    
-    
-    /**
      * 获取延迟执行秒数
      * @return int
      */
@@ -101,7 +94,7 @@ class Job
      * 获取处理的数据
      * @return mixed
      */
-    public function getData()
+    public function data()
     {
         return $this->data;
     }
@@ -121,18 +114,34 @@ class Job
      * 获取错误次数
      * @return int
      */
-    public function getRetry() : int
+    public function retry() : int
     {
         return $this->retry;
     }
     
     
     /**
-     * 设置重试次数
-     * @param int $step
+     * 是否需要重新发布
+     * @return bool
      */
-    protected function setRetry(int $step = 1) : void
+    public function isRelease() : bool
     {
-        $this->retry += $step;
+        return $this->release;
+    }
+    
+    
+    /**
+     * 设置重新发布到队列
+     * - 警告: 这行代码以后不要抛出异常
+     * @param int $delay
+     * @return $this
+     */
+    public function release(int $delay = 0) : self
+    {
+        $this->delay   = $delay;
+        $this->release = true;
+        $this->retry++;
+        
+        return $this;
     }
 }

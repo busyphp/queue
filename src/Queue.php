@@ -5,12 +5,15 @@ namespace BusyPHP\queue;
 use BusyPHP\App;
 use BusyPHP\exception\ClassNotFoundException;
 use BusyPHP\exception\ClassNotImplementsException;
+use BusyPHP\helper\LogHelper;
 use BusyPHP\helper\StringHelper;
 use BusyPHP\queue\contract\QueueDriveInterface;
 use BusyPHP\queue\contract\QueueJobInterfaces;
 use BusyPHP\queue\task\Job;
+use Exception;
 use RuntimeException;
 use think\facade\Log;
+use Throwable;
 
 /**
  * 列队类
@@ -108,31 +111,45 @@ class Queue
         
         $job     = $info['payload'];
         $handler = $job->getHandler();
-        if (!$handler) {
-            throw new RuntimeException('Queue processing class not defined');
+        try {
+            if (!$handler) {
+                throw new RuntimeException('Queue processing class not defined');
+            }
+            
+            if (!class_exists($handler)) {
+                throw new ClassNotFoundException($handler);
+            }
+            
+            if (!is_subclass_of($handler, QueueJobInterfaces::class)) {
+                throw new ClassNotImplementsException($handler, QueueJobInterfaces::class);
+            }
+            
+            /** @var QueueJobInterfaces $object */
+            $object = $this->app->invokeClass($handler);
+            $object->run($job);
+        } catch (Throwable | Exception $e) {
+            // 是否超过最大错误执行次数
+            $maxRetry = $this->getQueueConfig('fail_retry', 3);
+            if ($job->retry() >= $maxRetry) {
+                $data = $job->data();
+                LogHelper::plugin('queue')->tag('Queue Max Error')->error([
+                    'max'     => $maxRetry,
+                    'message' => $e->getMessage(),
+                    'traces'  => $e->getTraceAsString(),
+                    'handler' => $handler,
+                    'data'    => is_object($data) ? serialize($data) : $data
+                ]);
+                
+                $job->destroy();
+            } else {
+                $job->release($this->getQueueConfig('fail_delay', 60));
+            }
         }
         
-        if (!class_exists($handler)) {
-            throw new ClassNotFoundException($handler);
+        // 入队
+        if (!$job->isDestroy()) {
+            $this->getDrives()->push(serialize($job), $job->getDelay());
         }
-        
-        if (!is_subclass_of($handler, QueueJobInterfaces::class)) {
-            throw new ClassNotImplementsException($handler, QueueJobInterfaces::class);
-        }
-        
-        /** @var QueueJobInterfaces $object */
-        $object = $this->app->invokeClass($handler);
-        
-        /** @see Job::setRetry() */
-        $this->app->invokeMethod([$job, 'setRetry'], [1], true);
-        $object->run($job);
-        
-        // 标记删除
-        if ($job->isDestroy()) {
-            return;
-        }
-        
-        $this->getDrives()->push(serialize($job), $job->getDelay());
     }
     
     
