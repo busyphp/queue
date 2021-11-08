@@ -4,6 +4,9 @@
  */
 
 return [
+    // 是否启用
+    'enable'     => true,
+    
     // 驱动，目前仅支持 db
     'type'       => 'db',
     
