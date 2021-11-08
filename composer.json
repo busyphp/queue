@@ -23,17 +23,8 @@
 	},
 	"autoload"    : {
 		"psr-4" : {
-			"core\\"           : "core",
-			"app\\"            : "app",
 			"BusyPHP\\queue\\" : "src"
 		}
-	},
-	"scripts"     : {
-		"post-autoload-dump" : [
-			"@php think service:discover",
-			"@php think vendor:publish",
-			"@php think bp:install --dev composer.json"
-		]
 	},
 	"extra"       : {
 		"busyphp" : {
