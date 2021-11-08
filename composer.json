@@ -1,19 +1,22 @@
 {
 	"name"        : "busyphp/queue",
 	"type"        : "library",
-	"description" : "",
+	"description" : "用户BusyPHP数据队列消费，支持批量取数据",
+	"homepage"    : "http://www.harter.cn/?form=BusyPHP&plugin=busyphp/queue",
+	"keywords"    : [
+		"队列",
+		"queue"
+	],
 	"authors"     : [
 		{
 			"name"  : "busy^life",
 			"email" : "busy.life@qq.com"
 		}
 	],
-	"license"     : "Apache-2.0",
+	"license"     : "CC-BY-NC-4.0",
 	"require"     : {
-		"php"             : ">=7.1.0",
-		"busyphp/busyphp" : "^3.0",
-		"busyphp/swoole"  : "^1.0",
-		"busyphp/task"    : "^1.0"
+		"php"            : ">=7.1.0",
+		"busyphp/swoole" : "^2.0"
 	},
 	"require-dev" : {
 		"symfony/var-dumper" : "^4.2"
@@ -25,7 +28,10 @@
 	},
 	"extra"       : {
 		"busyphp" : {
-			"config" : {
+			"manager" : {
+				"name" : "消费队列模块"
+			},
+			"config"  : {
 				"queue" : "src/config.php"
 			}
 		}
