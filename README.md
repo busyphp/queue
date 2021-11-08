@@ -40,6 +40,9 @@ su -c "php think swoole start|stop|restart" -s /bin/sh www
 ```php
 <?php
 return [
+    // 是否启用
+    'enable' => false,
+
     // 驱动，目前仅支持 db
     'type' => 'db',
 
