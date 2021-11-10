@@ -20,31 +20,14 @@ class ManagerController extends PluginManager
      * @var string[]
      */
     private $createTableSql = [
-        'queue' => "CREATE TABLE `#__table_prefix__#member_oauth` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `user_id` INT(11) NOT NULL DEFAULT '0' COMMENT '会员ID',
-  `type` SMALLINT(2) NOT NULL DEFAULT '0' COMMENT '登录类型',
-  `union_type` SMALLINT(2) NOT NULL DEFAULT '0' COMMENT '厂商类型',
-  `openid` VARCHAR(60) NOT NULL DEFAULT '' COMMENT 'openid',
-  `unionid` VARCHAR(60) NOT NULL DEFAULT '' COMMENT '同登录类型唯一值',
-  `create_time` INT(11) NOT NULL DEFAULT '0' COMMENT '绑定时间',
-  `update_time` INT(11) NOT NULL DEFAULT '0' COMMENT '更新时间',
-  `login_total` INT(11) NOT NULL DEFAULT '0' COMMENT '登录次数',
-  `login_ip` VARCHAR(45) NOT NULL DEFAULT '' COMMENT '本次登录IP',
-  `last_ip` VARCHAR(45) NOT NULL DEFAULT '' COMMENT '上次登录IP',
-  `login_time` INT(11) NOT NULL DEFAULT '0' COMMENT '本次登录时间',
-  `last_time` INT(11) NOT NULL DEFAULT '0' COMMENT '上次登录时间',
-  `nickname` VARCHAR(60) NOT NULL DEFAULT '' COMMENT '昵称',
-  `avatar` VARCHAR(255) NOT NULL DEFAULT '' COMMENT '头像',
-  `sex` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '性别',
-  `user_info` TEXT NOT NULL COMMENT '登录数据',
-   PRIMARY KEY (`id`),
-   KEY `user_id` (`user_id`),
-   KEY `type` (`type`),
-   KEY `openid` (`openid`),
-   KEY `unionid` (`unionid`),
-   KEY `union_type` (`union_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='OAuth登录'",
+        'queue' => "CREATE TABLE `#__table_prefix__#system_queue` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `create_time` INT(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `delay_time` INT(11) NOT NULL DEFAULT '0' COMMENT '延迟执行时间',
+  `payload` MEDIUMTEXT NOT NULL COMMENT '队列数据',
+  PRIMARY KEY (`id`),
+  KEY `delay_time` (`delay_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='任务列队表'",
     ];
     
     /**
