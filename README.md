@@ -23,7 +23,7 @@ php think queue:work
 
 | 参数 | 默认值 | 说明 |
 | :----- | :-----: | :----- |
-| connection | sync  | 设置使用那个驱动执行，默认依据 `config/queue.php` 中的 `default` 确定  |
+| connection | sync  | 设置队列连接器名称，默认依据 `config/queue.php` 中的 `default` 确定  |
 | --queue | default  | 设置执行的队列名称 |
 | --once | -  | 仅处理队列上的下一个任务后就退出 |
 | --delay | 0  |  如果本次任务执行抛出异常且任务未被删除时，设置其下次执行前延迟多少秒 |
@@ -42,7 +42,7 @@ php think queue:listen
 
 | 参数 | 默认值 | 说明 |
 | :----- | :-----: | :----- |
-| connection | sync  | 设置使用那个驱动执行，默认依据 `config/queue.php` 中的 `default` 确定  |
+| connection | sync  | 设置队列连接器名称，默认依据 `config/queue.php` 中的 `default` 确定  |
 | --queue | default  | 设置执行的队列名称 |
 | --delay | 0  |  如果本次任务执行抛出异常且任务未被删除时，设置其下次执行前延迟多少秒 |
 | --memory | 128  | 子进程允许使用的内存上限，以 M 为单位 |
@@ -165,4 +165,21 @@ class TestJob implements JobInterface, JobFailedInterface
         // ...任务达到最大重试次数后，失败了
     }
 }
+```
+
+### 发布任务
+
+```php
+<?php
+// 发布一条任务到队列中
+\BusyPHP\queue\facade\Queue::push($job, $data); 
+
+// 发布一条延迟执行的任务到队列中
+\BusyPHP\queue\facade\Queue::later(10, $job, $data); 
+
+// 向 database 队列连接器中发布一条任务
+\BusyPHP\queue\facade\Queue::connection('database')->push($job, $data);
+
+// 向 redis 队列连接器中发布一条任务
+\BusyPHP\queue\facade\Queue::connection('redis')->push($job, $data);
 ```

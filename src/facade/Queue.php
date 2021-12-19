@@ -2,6 +2,7 @@
 
 namespace BusyPHP\queue\facade;
 
+use BusyPHP\queue\Connector;
 use think\Facade;
 
 /**
@@ -18,6 +19,7 @@ use think\Facade;
  * @method static mixed laterOn(string $queue, int|\DateTimeInterface $delay, mixed $job, mixed $data = '') 向某个队列中发布一条延迟执行任务
  * @method static mixed bulk(array $jobs, mixed $data = '', ?string $queue = null) 批量发布任务数据到不同任务中
  * @method static mixed pop(?string $queue = null) 取一条任务出来
+ * @method static Connector connection(?string $name = null) 切换队列连接器名称
  */
 class Queue extends Facade
 {

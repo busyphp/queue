@@ -21,7 +21,7 @@ abstract class Connector
     protected $app;
     
     /**
-     * The connector name for the queue.
+     * 队列连接器名称
      * @var string
      */
     protected $connection;
@@ -39,7 +39,7 @@ abstract class Connector
     
     /**
      * 发布一条任务到队列中
-     * @param object      $job 消费Job
+     * @param mixed       $job 消费Job
      * @param mixed       $data 消费的数据
      * @param string|null $queue 队列名称，默认为default
      * @return mixed
@@ -51,7 +51,7 @@ abstract class Connector
      * 向某个队列中发布一条任务
      * @param string $queue 队列名称
      * @param mixed  $job 消费Job
-     * @param string $data 消费的数据
+     * @param mixed  $data 消费的数据
      * @return mixed
      */
     public function pushOn($queue, $job, $data = '')
@@ -71,21 +71,36 @@ abstract class Connector
     
     
     /**
-     * @param        $delay
-     * @param        $job
-     * @param string $data
-     * @param null   $queue
+     * 发布一条延迟执行的任务到队列中
+     * @param int|DateTimeInterface $delay 延迟执行秒数
+     * @param mixed                 $job 任务Job
+     * @param string                $data 任务数据
+     * @param string|null           $queue 队列名称
      * @return mixed
      */
     abstract public function later($delay, $job, $data = '', $queue = null);
     
     
+    /**
+     * 向某个队列发布一条延迟执行的任务
+     * @param string                $queue 队列名称
+     * @param int|DateTimeInterface $delay 延迟执行秒数
+     * @param string                $job 任务Job
+     * @param mixed                 $data 队列名称
+     * @return mixed
+     */
     public function laterOn($queue, $delay, $job, $data = '')
     {
         return $this->later($delay, $job, $data, $queue);
     }
     
     
+    /**
+     * 将任务数据批量分配到不同的任务Job中
+     * @param array       $jobs 任务JOB集合
+     * @param mixed       $data 任务数据
+     * @param string|null $queue 队列名称
+     */
     public function bulk($jobs, $data = '', $queue = null)
     {
         foreach ((array) $jobs as $job) {
@@ -94,6 +109,11 @@ abstract class Connector
     }
     
     
+    /**
+     * 取出一条任务
+     * @param string|null $queue 队列名称
+     * @return mixed
+     */
     abstract public function pop($queue = null);
     
     

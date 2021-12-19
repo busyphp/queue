@@ -44,10 +44,11 @@ class Queue extends Manager
     
     
     /**
+     * 切换队列连接器名称
      * @param null|string $name
      * @return Connector
      */
-    public function connection($name = null)
+    public function connection(?string $name = null) : Connector
     {
         return $this->driver($name);
     }
