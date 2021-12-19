@@ -7,17 +7,17 @@
  */
 
 return [
-    // 默认驱动
+    // 默认队列连接器
     'default'     => 'sync',
     
-    // 队列驱动配置
+    // 队列连接器配置
     'connections' => [
-        // 同步驱动
+        // 同步
         'sync'     => [
             'type' => 'sync',
         ],
         
-        // 数据库驱动
+        // 数据库
         'database' => [
             'type'       => 'database',
             'queue'      => 'default',
@@ -25,7 +25,7 @@ return [
             'connection' => null,
         ],
         
-        // redis驱动
+        // redis
         'redis'    => [
             'type'       => 'redis',
             'queue'      => 'default',
