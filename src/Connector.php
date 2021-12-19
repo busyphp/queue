@@ -44,7 +44,7 @@ abstract class Connector
      * @param string|null $queue 队列名称，默认为default
      * @return mixed
      */
-    abstract public function push($job, $data = '', ?string $queue = null);
+    abstract public function push($job, $data = '', $queue = null);
     
     
     /**
@@ -54,7 +54,7 @@ abstract class Connector
      * @param string $data 消费的数据
      * @return mixed
      */
-    public function pushOn(string $queue, $job, $data = '')
+    public function pushOn($queue, $job, $data = '')
     {
         return $this->push($job, $data, $queue);
     }
@@ -67,7 +67,7 @@ abstract class Connector
      * @param array       $options 队列配置
      * @return mixed
      */
-    abstract public function pushRaw(string $payload, ?string $queue = null, array $options = []);
+    abstract public function pushRaw($payload, $queue = null, array $options = []);
     
     
     /**

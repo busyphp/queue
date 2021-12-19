@@ -2,10 +2,13 @@
 
 namespace BusyPHP\queue\command;
 
+use BusyPHP\queue\InteractsWithFailed;
 use think\console\Command;
 
 class FlushFailed extends Command
 {
+    use InteractsWithFailed;
+    
     protected function configure()
     {
         $this->setName('queue:flush')->setDescription('Flush all of the failed queue jobs');
@@ -14,7 +17,7 @@ class FlushFailed extends Command
     
     public function handle()
     {
-        $this->app->get('queue.failer')->flush();
+        $this->getQueueFailed()->flush();
         
         $this->output->info('All failed jobs deleted successfully!');
     }

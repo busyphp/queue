@@ -298,6 +298,8 @@ class Worker
             $this->handle->report($e);
             $this->sleep(1);
         }
+        
+        return null;
     }
     
     
@@ -308,7 +310,7 @@ class Worker
      * @param int    $maxTries
      * @param int    $delay
      * @return void
-     * @throws Exception
+     * @throws Throwable
      */
     public function process($connection, $job, $maxTries = 0, $delay = 0)
     {
@@ -367,9 +369,9 @@ class Worker
      * @param string    $connection
      * @param Job       $job
      * @param int       $maxTries
-     * @param Exception $e
+     * @param Throwable $e
      */
-    protected function markJobAsFailedIfWillExceedMaxAttempts($connection, $job, $maxTries, $e)
+    protected function markJobAsFailedIfWillExceedMaxAttempts($connection, $job, $maxTries, Throwable $e)
     {
         $maxTries = !is_null($job->maxTries()) ? $job->maxTries() : $maxTries;
         
@@ -386,19 +388,17 @@ class Worker
     /**
      * @param string    $connection
      * @param Job       $job
-     * @param Exception $e
+     * @param Throwable $e
      */
-    protected function failJob($connection, $job, $e)
+    protected function failJob($connection, $job, Throwable $e)
     {
         $job->markAsFailed();
-        
         if ($job->isDeleted()) {
             return;
         }
         
         try {
             $job->delete();
-            
             $job->failed($e);
         } finally {
             $this->event->trigger(new JobFailed($connection, $job, $e ?: new RuntimeException('ManuallyFailed')));

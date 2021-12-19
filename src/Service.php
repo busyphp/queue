@@ -4,16 +4,20 @@ namespace BusyPHP\queue;
 
 use think\helper\Arr;
 use think\helper\Str;
-use BusyPHP\queue\command\FailedTable;
 use BusyPHP\queue\command\FlushFailed;
 use BusyPHP\queue\command\ForgetFailed;
 use BusyPHP\queue\command\Listen;
 use BusyPHP\queue\command\ListFailed;
 use BusyPHP\queue\command\Restart;
 use BusyPHP\queue\command\Retry;
-use BusyPHP\queue\command\Table;
 use BusyPHP\queue\command\Work;
 
+/**
+ * 服务类
+ * @author busy^life <busy.life@qq.com>
+ * @copyright (c) 2015--2021 ShanXi Han Tuo Technology Co.,Ltd. All rights reserved.
+ * @version $Id: 2021/12/19 下午5:57 Service.php $
+ */
 class Service extends \think\Service
 {
     public function register()
@@ -24,7 +28,7 @@ class Service extends \think\Service
             
             $type = Arr::pull($config, 'type', 'none');
             
-            $class = false !== strpos($type, '\\') ? $type : '\\think\\queue\\failed\\' . Str::studly($type);
+            $class = false !== strpos($type, '\\') ? $type : '\\BusyPHP\\queue\\failed\\' . Str::studly($type);
             
             return $this->app->invokeClass($class, [$config]);
         });
@@ -35,7 +39,6 @@ class Service extends \think\Service
     {
         $this->commands([
             FailedJob::class,
-            Table::class,
             FlushFailed::class,
             ForgetFailed::class,
             ListFailed::class,
@@ -43,7 +46,6 @@ class Service extends \think\Service
             Work::class,
             Restart::class,
             Listen::class,
-            FailedTable::class,
         ]);
     }
 }

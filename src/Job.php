@@ -11,14 +11,16 @@
 
 namespace BusyPHP\queue;
 
-use Exception;
-use think\App;
+use BusyPHP\queue\contract\JobFailedInterface;
+use BusyPHP\queue\contract\JobInterface;
+use BusyPHP\App;
+use Throwable;
 
 abstract class Job
 {
     /**
      * The job handler instance.
-     * @var mixed
+     * @var mixed|JobInterface|JobFailedInterface
      */
     protected $instance;
     
@@ -160,9 +162,10 @@ abstract class Job
     
     
     /**
-     * Parse the job declaration into class and method.
+     * 解析任务类
      * @param string $job
      * @return array
+     * @see JobInterface::fire()
      */
     protected function parseJob($job)
     {
@@ -173,9 +176,9 @@ abstract class Job
     
     
     /**
-     * Resolve the given job handler.
+     * 初始化任务类
      * @param string $name
-     * @return mixed
+     * @return mixed|JobInterface
      */
     protected function resolve($name)
     {
@@ -217,11 +220,10 @@ abstract class Job
     
     /**
      * Process an exception that caused the job to fail.
-     *
-     * @param Exception $e
+     * @param Throwable $e
      * @return void
      */
-    public function failed($e)
+    public function failed(Throwable $e)
     {
         $this->markAsFailed();
         
@@ -229,7 +231,8 @@ abstract class Job
         
         [$class, $method] = $this->parseJob($payload['job']);
         
-        if (method_exists($this->instance = $this->resolve($class), 'failed')) {
+        $this->instance = $this->resolve($class);
+        if (method_exists($this->instance, 'failed')) {
             $this->instance->failed($payload['data'], $e);
         }
     }

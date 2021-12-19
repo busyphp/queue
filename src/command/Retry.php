@@ -2,6 +2,7 @@
 
 namespace BusyPHP\queue\command;
 
+use BusyPHP\queue\InteractsWithFailed;
 use stdClass;
 use think\console\Command;
 use think\console\input\Argument;
@@ -9,6 +10,8 @@ use think\helper\Arr;
 
 class Retry extends Command
 {
+    use InteractsWithFailed;
+    
     protected function configure()
     {
         $this->setName('queue:retry')
@@ -20,7 +23,7 @@ class Retry extends Command
     public function handle()
     {
         foreach ($this->getJobIds() as $id) {
-            $job = $this->app['queue.failer']->find($id);
+            $job = $this->getQueueFailed()->find($id);
             
             if (is_null($job)) {
                 $this->output->error("Unable to find failed job with ID [{$id}].");
@@ -29,7 +32,7 @@ class Retry extends Command
                 
                 $this->output->info("The failed job [{$id}] has been pushed back onto the queue!");
                 
-                $this->app['queue.failer']->forget($id);
+                $this->getQueueFailed()->forget($id);
             }
         }
     }
@@ -78,7 +81,7 @@ class Retry extends Command
         $ids = (array) $this->input->getArgument('id');
         
         if (count($ids) === 1 && $ids[0] === 'all') {
-            $ids = Arr::pluck($this->app['queue.failer']->all(), 'id');
+            $ids = Arr::pluck($this->getQueueFailed()->all(), 'id');
         }
         
         return $ids;

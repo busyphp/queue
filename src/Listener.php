@@ -11,10 +11,10 @@
 
 namespace BusyPHP\queue;
 
+use BusyPHP\App;
 use Closure;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
-use think\App;
 
 class Listener
 {

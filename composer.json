@@ -1,7 +1,7 @@
 {
 	"name"        : "busyphp/queue",
 	"type"        : "library",
-	"description" : "支持批量处理队列",
+	"description" : "基于ThinkPHP官方改进的一个消息队列服务，它支持消息队列的一些基本特性，发布，获取，执行，删除，重发，失败处理，延迟执行，超时控制，多队列，内存限制 ，启动，停止，守护等",
 	"homepage"    : "http://www.harter.cn/?form=BusyPHP&plugin=busyphp/queue",
 	"keywords"    : [
 		"队列",
@@ -15,8 +15,11 @@
 	],
 	"license"     : "CC-BY-NC-4.0",
 	"require"     : {
-		"php"            : ">=7.1.0",
-		"busyphp/swoole" : "^2.0"
+		"php"             : ">=7.1.0",
+		"ext-json"        : "*",
+		"busyphp/busyphp" : "^6.0",
+		"symfony/process" : "^4.2",
+		"nesbot/carbon"   : "^2.16"
 	},
 	"require-dev" : {
 		"symfony/var-dumper" : "^4.2"
@@ -24,24 +27,29 @@
 	"autoload"    : {
 		"psr-4" : {
 			"BusyPHP\\queue\\" : "src"
-		}
+		},
+		"files" : [
+			"src/helper/helper.php"
+		]
 	},
 	"extra"       : {
+		"think"   : {
+			"config" : {
+				"queue" : "src/config/config.php"
+			}
+		},
 		"busyphp" : {
 			"manager"  : {
 				"name"    : "消费队列模块",
 				"class"   : "BusyPHP\\queue\\app\\controller\\ManagerController",
 				"install" : {
 					"install_operate"   : {
-						"request_confirm" : "确认要安装 <code>__package__</code> 吗？<div class=text-gray>注意：安装会覆盖数据库中的 <code>*_system_queue</code> 表</div>"
+						"request_confirm" : "确认要安装 <code>__package__</code> 吗？<div class=text-gray>注意：安装会覆盖数据库中的 <code>*_system_jobs</code> <code>*_system_jobs_failed</code> 表</div>"
 					},
 					"uninstall_operate" : {
-						"request_confirm" : "确认要卸载 <code>__package__</code> 吗？<div class=text-gray>注意：卸载会删除数据库中的 <code>*_system_queue</code> 表</div>"
+						"request_confirm" : "确认要卸载 <code>__package__</code> 吗？<div class=text-gray>注意：卸载会删除数据库中的 <code>*_system_jobs</code> <code>*_system_jobs_failed</code> 表</div>"
 					}
 				}
-			},
-			"config"   : {
-				"queue" : "src/config/config.php"
 			},
 			"services" : [
 				"BusyPHP\\queue\\Service"

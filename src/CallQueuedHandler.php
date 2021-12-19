@@ -11,7 +11,7 @@
 
 namespace BusyPHP\queue;
 
-use think\App;
+use BusyPHP\App;
 
 class CallQueuedHandler
 {

@@ -1,15 +1,9 @@
 <?php
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006-2015 http://thinkphp.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: yunwuxin <448901948@qq.com>
-// +----------------------------------------------------------------------
+
 namespace BusyPHP\queue\command;
 
+use BusyPHP\queue\InteractsWithFailed;
+use Exception;
 use think\console\Command;
 use think\console\Input;
 use think\console\input\Argument;
@@ -21,8 +15,17 @@ use BusyPHP\queue\event\JobProcessing;
 use BusyPHP\queue\Job;
 use BusyPHP\queue\Worker;
 
+/**
+ * 执行单个Work命令
+ * @author busy^life <busy.life@qq.com>
+ * @author  yunwuxin <448901948@qq.com>
+ * @copyright (c) 2015--2021 ShanXi Han Tuo Technology Co.,Ltd. All rights reserved.
+ * @version $Id: 2021/12/19 下午2:52 Work.php $
+ */
 class Work extends Command
 {
+    use InteractsWithFailed;
+    
     /**
      * The queue worker instance.
      * @var Worker
@@ -58,6 +61,7 @@ class Work extends Command
      * @param Input  $input
      * @param Output $output
      * @return int|null|void
+     * @throws Exception
      */
     public function execute(Input $input, Output $output)
     {
@@ -143,6 +147,7 @@ class Work extends Command
      */
     protected function logFailedJob(JobFailed $event)
     {
-        $this->app['queue.failer']->log($event->connection, $event->job->getQueue(), $event->job->getRawBody(), $event->exception);
+        $this->getQueueFailed()
+            ->log($event->connection, $event->job->getQueue(), $event->job->getRawBody(), $event->exception);
     }
 }

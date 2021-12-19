@@ -6,7 +6,9 @@ use Carbon\Carbon;
 use stdClass;
 use think\Db;
 use think\db\ConnectionInterface;
+use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use think\db\Query;
 use BusyPHP\queue\Connector;
 use BusyPHP\queue\InteractsWithTime;
@@ -161,6 +163,9 @@ class Database extends Connector
      *
      * @param string|null $queue
      * @return StdClass|null
+     * @throws DbException
+     * @throws DataNotFoundException
+     * @throws ModelNotFoundException
      */
     protected function getNextAvailableJob($queue)
     {

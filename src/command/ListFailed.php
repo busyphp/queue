@@ -2,12 +2,15 @@
 
 namespace BusyPHP\queue\command;
 
+use BusyPHP\queue\InteractsWithFailed;
 use think\console\Command;
 use think\console\Table;
 use think\helper\Arr;
 
 class ListFailed extends Command
 {
+    use InteractsWithFailed;
+    
     /**
      * The table headers for the command.
      *
@@ -56,7 +59,7 @@ class ListFailed extends Command
      */
     protected function getFailedJobs()
     {
-        $failed = $this->app['queue.failer']->all();
+        $failed = $this->getQueueFailed()->all();
         
         return collect($failed)->map(function($failed) {
             return $this->parseFailedJob((array) $failed);

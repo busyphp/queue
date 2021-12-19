@@ -5,7 +5,16 @@ namespace BusyPHP\queue\failed;
 use Carbon\Carbon;
 use think\Db;
 use BusyPHP\queue\FailedJob;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 
+/**
+ * 任务失败处理类 - 存入数据库
+ * @author busy^life <busy.life@qq.com>
+ * @copyright (c) 2015--2021 ShanXi Han Tuo Technology Co.,Ltd. All rights reserved.
+ * @version $Id: 2021/12/19 下午7:02 Database.php $
+ */
 class Database extends FailedJob
 {
     /** @var Db */
@@ -64,9 +73,11 @@ class Database extends FailedJob
     
     /**
      * Get a single failed job.
-     *
      * @param mixed $id
      * @return object|null
+     * @throws DbException
+     * @throws DataNotFoundException
+     * @throws ModelNotFoundException
      */
     public function find($id)
     {
@@ -76,9 +87,9 @@ class Database extends FailedJob
     
     /**
      * Delete a single failed job from storage.
-     *
      * @param mixed $id
      * @return bool
+     * @throws DbException
      */
     public function forget($id)
     {
@@ -88,8 +99,8 @@ class Database extends FailedJob
     
     /**
      * Flush all of the failed jobs from storage.
-     *
      * @return void
+     * @throws DbException
      */
     public function flush()
     {

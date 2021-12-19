@@ -11,7 +11,7 @@
 
 namespace BusyPHP\queue\job;
 
-use think\App;
+use BusyPHP\App;
 use BusyPHP\queue\connector\Redis as RedisQueue;
 use BusyPHP\queue\Job;
 

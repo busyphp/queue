@@ -4,6 +4,12 @@ namespace BusyPHP\queue\failed;
 
 use BusyPHP\queue\FailedJob;
 
+/**
+ * 任务失败处理类 - 无操作
+ * @author busy^life <busy.life@qq.com>
+ * @copyright (c) 2015--2021 ShanXi Han Tuo Technology Co.,Ltd. All rights reserved.
+ * @version $Id: 2021/12/19 下午7:02 None.php $
+ */
 class None extends FailedJob
 {
     /**

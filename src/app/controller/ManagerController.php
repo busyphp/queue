@@ -20,14 +20,29 @@ class ManagerController extends PluginManager
      * @var string[]
      */
     private $createTableSql = [
-        'queue' => "CREATE TABLE `#__table_prefix__#system_queue` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `create_time` INT(11) NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `delay_time` INT(11) NOT NULL DEFAULT '0' COMMENT '延迟执行时间',
-  `payload` MEDIUMTEXT NOT NULL COMMENT '队列数据',
+        'jobs' => "CREATE TABLE `#__table_prefix__#system_jobs` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `queue` VARCHAR(255) NOT NULL COMMENT '队列名称',
+  `payload` LONGTEXT NOT NULL COMMENT '任务数据',
+  `attempts` INT(11) UNSIGNED NOT NULL COMMENT '重试次数',
+  `reserve_time` INT(11) UNSIGNED DEFAULT NULL COMMENT '保留时间',
+  `available_time` INT(11) UNSIGNED NOT NULL COMMENT '延迟执行时间',
+  `create_time` INT(11) UNSIGNED NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`),
-  KEY `delay_time` (`delay_time`)
+  KEY `queue` (`queue`),
+  KEY `reserve_time` (`reserve_time`),
+  KEY `available_time` (`available_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='任务列队表'",
+        
+        'failed' => "CREATE TABLE `#__table_prefix__#system_jobs_failed` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `connection` VARCHAR(255) NOT NULL COMMENT '连接器名称',
+  `queue` VARCHAR(255) NOT NULL COMMENT '队列名称',
+  `payload` LONGTEXT NOT NULL COMMENT '任务数据',
+  `exception` LONGTEXT NOT NULL COMMENT '异常信息',
+  `fail_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '失败时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='任务队列失败表'"
     ];
     
     /**
@@ -35,7 +50,8 @@ class ManagerController extends PluginManager
      * @var string[]
      */
     private $deleteTableSql = [
-        "DROP TABLE IF EXISTS `#__table_prefix__#system_queue`",
+        "DROP TABLE IF EXISTS `#__table_prefix__#system_jobs`",
+        "DROP TABLE IF EXISTS `#__table_prefix__#system_jobs_failed`",
     ];
     
     

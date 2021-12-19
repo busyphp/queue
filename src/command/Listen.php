@@ -1,13 +1,4 @@
 <?php
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006-2015 http://thinkphp.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: yunwuxin <448901948@qq.com>
-// +----------------------------------------------------------------------
 
 namespace BusyPHP\queue\command;
 
@@ -18,6 +9,13 @@ use think\console\input\Option;
 use think\console\Output;
 use BusyPHP\queue\Listener;
 
+/**
+ * 监听任务命令
+ * @author busy^life <busy.life@qq.com>
+ * @author yunwuxin <448901948@qq.com>
+ * @copyright (c) 2015--2021 ShanXi Han Tuo Technology Co.,Ltd. All rights reserved.
+ * @version $Id: 2021/12/19 下午2:51 Listen.php $
+ */
 class Listen extends Command
 {
     /** @var  Listener */

@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace BusyPHP\queue\job;
 
-use think\App;
+use BusyPHP\App;
 use BusyPHP\queue\connector\Database as DatabaseQueue;
 use BusyPHP\queue\Job;
 
