@@ -47,13 +47,20 @@ class Redis extends Connector
      */
     protected $blockFor = null;
     
+    /**
+     * Redis前缀
+     * @var string
+     */
+    protected $prefix = '';
     
-    public function __construct($redis, $default = 'default', $retryAfter = 60, $blockFor = null)
+    
+    public function __construct($redis, $default = 'default', $retryAfter = 60, $blockFor = null, $prefix = '')
     {
         $this->redis      = $redis;
         $this->default    = $default;
         $this->retryAfter = $retryAfter;
         $this->blockFor   = $blockFor;
+        $this->prefix     = $prefix;
     }
     
     
@@ -110,7 +117,7 @@ class Redis extends Connector
             }
         };
         
-        return new self($redis, $config['queue'], $config['retry_after'] ?? 60, $config['block_for'] ?? null);
+        return new self($redis, $config['queue'], $config['retry_after'] ?? 60, $config['block_for'] ?? null, $config['prefix'] ?? '');
     }
     
     
@@ -344,6 +351,6 @@ class Redis extends Connector
     {
         $queue = $queue ?: $this->default;
         
-        return "{queues:{$queue}}";
+        return "{{$this->prefix}queues:{$queue}}";
     }
 }
