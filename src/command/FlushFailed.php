@@ -11,7 +11,7 @@ class FlushFailed extends Command
     
     protected function configure()
     {
-        $this->setName('queue:flush')->setDescription('Flush all of the failed queue jobs');
+        $this->setName('bp:queue:flush')->setDescription('Flush all of the failed queue jobs');
     }
     
     

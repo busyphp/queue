@@ -40,7 +40,6 @@ class Service extends \think\Service
     public function boot()
     {
         $this->commands([
-            FailedJob::class,
             FlushFailed::class,
             ForgetFailed::class,
             ListFailed::class,

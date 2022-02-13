@@ -13,12 +13,12 @@ composer require busyphp/queue
 
 `cd` 到到项目根目录下执行
 
-### `queue:work` 命令
+### `bp:queue:work` 命令
 
 > 该命令将启动一个 work 进程来处理消息队列
 
 ```shell script
-php think queue:work
+php think bp:queue:work
 ```
 
 | 参数 | 默认值 | 说明 |
@@ -32,12 +32,12 @@ php think queue:work
 | --sleep | 3 | 如果队列中无任务，则多长时间后重新检查 |
 | --tries | 0 | 如果任务已经超过尝试次数上限，0为不限，则触发当前任务类型下的failed()方法 |
 
-### `queue:listen` 命令
+### `bp:queue:listen` 命令
 
 > listen命令所在的父进程会创建一个单次执行模式的work子进程，并通过该work子进程来处理队列中的下一个消息，当这个work子进程退出之后，listen命令所在的父进程会监听到该子进程的退出信号，并重新创建一个新的单次执行的work子进程
 
 ```shell script
-php think queue:listen
+php think bp:queue:listen
 ```
 
 | 参数 | 默认值 | 说明 |
@@ -50,30 +50,30 @@ php think queue:listen
 | --sleep | 3 | 如果队列中无任务，则多长时间后重新检查 |
 | --tries | 0 | 如果任务已经超过尝试次数上限，0为不限，则触发当前任务类型下的failed()方法 |
 
-### `queue:failed` 列出所有失败的任务
+### `bp:queue:failed` 列出所有失败的任务
 
 ```shell script
-php think queue:failed
+php think bp:queue:failed
 ```
-### `queue:flush` 刷新所有失败的任务
+### `bp:queue:flush` 刷新所有失败的任务
 
 ```shell script
-php think queue:flush
-```
-
-### `queue:forget` 强制执行一条失败的任务
-```shell script
-php think queue:forget id 1(失败任务ID)
+php think bp:queue:flush
 ```
 
-### `queue:retry` 将一批失败的任务进行重试
+### `bp:queue:forget` 强制执行一条失败的任务
 ```shell script
-php think queue:forget id 1,2,3
+php think bp:queue:forget id 1(失败任务ID)
 ```
 
-### `queue:restart` 重启进程
+### `bp:queue:retry` 将一批失败的任务进行重试
 ```shell script
-php think queue:restart
+php think bp:queue:forget id 1,2,3
+```
+
+### `bp:queue:restart` 重启进程
+```shell script
+php think bp:queue:restart
 ```
 
 

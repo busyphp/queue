@@ -14,7 +14,7 @@ class Retry extends Command
     
     protected function configure()
     {
-        $this->setName('queue:retry')
+        $this->setName('bp:queue:retry')
             ->addArgument('id', Argument::IS_ARRAY | Argument::REQUIRED, 'The ID of the failed job or "all" to retry all jobs')
             ->setDescription('Retry a failed queue job');
     }

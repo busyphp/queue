@@ -21,7 +21,7 @@ class Restart extends Command
     
     protected function configure()
     {
-        $this->setName('queue:restart')->setDescription('Restart queue worker daemons after their current job');
+        $this->setName('bp:queue:restart')->setDescription('Restart queue worker daemons after their current job');
     }
     
     

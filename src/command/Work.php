@@ -44,7 +44,7 @@ class Work extends Command
     
     protected function configure()
     {
-        $this->setName('queue:work')
+        $this->setName('bp:queue:work')
             ->addArgument('connection', Argument::OPTIONAL, 'The name of the queue connection to work', null)
             ->addOption('queue', null, Option::VALUE_OPTIONAL, 'The queue to listen on')
             ->addOption('once', null, Option::VALUE_NONE, 'Only process the next job on the queue')
