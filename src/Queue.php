@@ -19,18 +19,20 @@ use BusyPHP\queue\connector\Redis;
  */
 class Queue extends Manager
 {
+    use WithQueueConfig;
+    
     protected $namespace = '\\BusyPHP\\queue\\connector\\';
     
     
     protected function resolveType(string $name)
     {
-        return $this->app->config->get("queue.connections.{$name}.type", 'sync');
+        return $this->getQueueConfig("connections.{$name}.type", 'sync');
     }
     
     
     protected function resolveConfig(string $name)
     {
-        return $this->app->config->get("queue.connections.{$name}");
+        return $this->getQueueConfig("connections.{$name}");
     }
     
     
@@ -60,6 +62,6 @@ class Queue extends Manager
      */
     public function getDefaultDriver()
     {
-        return $this->app->config->get('queue.default');
+        return $this->getQueueConfig('default');
     }
 }

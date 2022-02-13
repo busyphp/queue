@@ -19,6 +19,6 @@ trait InteractsWithFailed
      */
     public function getQueueFailed()
     {
-        return $this->app->get('queue.failer');
+        return $this->app->get('busy.queue.failer');
     }
 }

@@ -20,11 +20,13 @@ use BusyPHP\queue\command\Work;
  */
 class Service extends \think\Service
 {
+    use WithQueueConfig;
+    
     public function register()
     {
-        $this->app->bind('queue', Queue::class);
-        $this->app->bind('queue.failer', function() {
-            $config = $this->app->config->get('queue.failed', []);
+        $this->app->bind('busy.queue', Queue::class);
+        $this->app->bind('busy.queue.failer', function() {
+            $config = $this->getQueueConfig('failed', []);
             
             $type = Arr::pull($config, 'type', 'none');
             

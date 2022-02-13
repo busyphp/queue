@@ -3,6 +3,7 @@
 namespace BusyPHP\queue\command;
 
 use BusyPHP\queue\InteractsWithFailed;
+use BusyPHP\queue\WithQueueConfig;
 use Exception;
 use think\console\Command;
 use think\console\Input;
@@ -25,6 +26,7 @@ use BusyPHP\queue\Worker;
 class Work extends Command
 {
     use InteractsWithFailed;
+    use WithQueueConfig;
     
     /**
      * The queue worker instance.
@@ -65,9 +67,9 @@ class Work extends Command
      */
     public function execute(Input $input, Output $output)
     {
-        $connection = $input->getArgument('connection') ?: $this->app->config->get('queue.default');
+        $connection = $input->getArgument('connection') ?: $this->getQueueConfig('default');
         
-        $queue = $input->getOption('queue') ?: $this->app->config->get("queue.connections.{$connection}.queue", 'default');
+        $queue = $input->getOption('queue') ?: $this->getQueueConfig("connections.{$connection}.queue", 'default');
         $delay = $input->getOption('delay');
         $sleep = $input->getOption('sleep');
         $tries = $input->getOption('tries');

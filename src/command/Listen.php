@@ -2,6 +2,7 @@
 
 namespace BusyPHP\queue\command;
 
+use BusyPHP\queue\WithQueueConfig;
 use think\console\Command;
 use think\console\Input;
 use think\console\input\Argument;
@@ -18,6 +19,8 @@ use BusyPHP\queue\Listener;
  */
 class Listen extends Command
 {
+    use WithQueueConfig;
+    
     /** @var  Listener */
     protected $listener;
     
@@ -48,9 +51,9 @@ class Listen extends Command
     
     public function execute(Input $input, Output $output)
     {
-        $connection = $input->getArgument('connection') ?: $this->app->config->get('queue.default');
+        $connection = $input->getArgument('connection') ?: $this->getQueueConfig('default');
         
-        $queue   = $input->getOption('queue') ?: $this->app->config->get("queue.connections.{$connection}.queue", 'default');
+        $queue   = $input->getOption('queue') ?: $this->getQueueConfig("connections.{$connection}.queue", 'default');
         $delay   = $input->getOption('delay');
         $memory  = $input->getOption('memory');
         $timeout = $input->getOption('timeout');

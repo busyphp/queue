@@ -25,6 +25,6 @@ class Queue extends Facade
 {
     protected static function getFacadeClass()
     {
-        return \BusyPHP\queue\Queue::class;
+        return 'busy.queue';
     }
 }

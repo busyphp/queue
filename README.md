@@ -77,7 +77,7 @@ php think queue:restart
 ```
 
 
-## 配置 `config/queue.php`
+## 配置 `config/busy-queue.php`
 
 ```php
 <?php
