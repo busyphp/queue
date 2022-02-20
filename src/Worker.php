@@ -139,7 +139,7 @@ class Worker
     protected function getTimestampOfLastQueueRestart()
     {
         if ($this->cache) {
-            return $this->cache->get('think:queue:restart');
+            return $this->cache->get('busyphp:queue:restart');
         }
     }
     

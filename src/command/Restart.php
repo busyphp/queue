@@ -21,13 +21,13 @@ class Restart extends Command
     
     protected function configure()
     {
-        $this->setName('bp:queue:restart')->setDescription('Restart queue worker daemons after their current job');
+        $this->setName('queue:restart')->setDescription('Restart queue worker daemons after their current job');
     }
     
     
     public function handle(Cache $cache)
     {
-        $cache->set('think:queue:restart', $this->currentTime());
+        $cache->set('busyphp:queue:restart', $this->currentTime());
         $this->output->info("Broadcasting queue restart signal.");
     }
 }

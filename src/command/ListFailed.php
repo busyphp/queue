@@ -21,7 +21,7 @@ class ListFailed extends Command
     
     protected function configure()
     {
-        $this->setName('bp:queue:failed')->setDescription('List all of the failed queue jobs');
+        $this->setName('queue:failed')->setDescription('List all of the failed queue jobs');
     }
     
     

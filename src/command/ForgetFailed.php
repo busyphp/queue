@@ -18,7 +18,7 @@ class ForgetFailed extends Command
     
     protected function configure()
     {
-        $this->setName('bp:queue:forget')
+        $this->setName('queue:forget')
             ->addArgument('id', Argument::REQUIRED, 'The ID of the failed job')
             ->setDescription('Delete a failed queue job');
     }

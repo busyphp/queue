@@ -37,7 +37,7 @@ class Listen extends Command
     
     protected function configure()
     {
-        $this->setName('bp:queue:listen')
+        $this->setName('queue:listen')
             ->addArgument('connection', Argument::OPTIONAL, 'The name of the queue connection to work', null)
             ->addOption('queue', null, Option::VALUE_OPTIONAL, 'The queue to listen on', null)
             ->addOption('delay', null, Option::VALUE_OPTIONAL, 'Amount of time to delay failed jobs', 0)
