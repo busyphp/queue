@@ -3,4 +3,5 @@
 !composer.json
 !LICENSE.txt
 !README.md
+!.phpstorm.meta.php
 !.gitignore
