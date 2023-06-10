@@ -2,6 +2,7 @@
 
 namespace BusyPHP\queue\failed;
 
+use BusyPHP\helper\ArrayHelper;
 use Carbon\Carbon;
 use think\Db;
 use BusyPHP\queue\FailedJob;
@@ -37,7 +38,7 @@ class Database extends FailedJob
     
     public static function __make(Db $db, $config)
     {
-        return new self($db, $config['table']);
+        return new self($db, ArrayHelper::get($config, 'table') ?: 'plugin_queue_jobs_failed');
     }
     
     

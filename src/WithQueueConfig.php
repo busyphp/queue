@@ -19,7 +19,7 @@ trait WithQueueConfig
      * @param mixed  $default
      * @return mixed
      */
-    public function getQueueConfig(string $name, $default = null)
+    public function getQueueConfig(string $name, mixed $default = null) : mixed
     {
         if (isset($this->app)) {
             $app = $this->app;
@@ -27,6 +27,6 @@ trait WithQueueConfig
             $app = App::getInstance();
         }
         
-        return $app->config->get("busy-queue.{$name}", $default);
+        return $app->config->get("queue.$name", $default);
     }
 }

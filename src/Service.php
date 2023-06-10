@@ -30,7 +30,7 @@ class Service extends \think\Service
             
             $type = Arr::pull($config, 'type', 'none');
             
-            $class = false !== strpos($type, '\\') ? $type : '\\BusyPHP\\queue\\failed\\' . Str::studly($type);
+            $class = str_contains($type, '\\') ? $type : '\\BusyPHP\\queue\\failed\\' . Str::studly($type);
             
             return $this->app->invokeClass($class, [$config]);
         });

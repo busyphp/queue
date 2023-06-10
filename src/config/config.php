@@ -8,7 +8,7 @@
 
 return [
     // 默认队列连接器
-    'default'     => 'sync',
+    'default'     => 'database',
     
     // 队列连接器配置
     'connections' => [
@@ -19,10 +19,8 @@ return [
         
         // 数据库
         'database' => [
-            'type'       => 'database',
-            'queue'      => 'default',
-            'table'      => 'system_jobs',
-            'connection' => null,
+            'type'  => 'database',
+            'queue' => 'default',
         ],
         
         // redis
@@ -43,7 +41,6 @@ return [
     
     // 任务超过尝试次数上限的处理方式
     'failed'      => [
-        'type'  => 'database',
-        'table' => 'system_jobs_failed',
+        'type' => 'database',
     ],
 ];

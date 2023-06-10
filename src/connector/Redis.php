@@ -11,6 +11,7 @@
 
 namespace BusyPHP\queue\connector;
 
+use BusyPHP\helper\ArrayHelper;
 use Closure;
 use Exception;
 use RedisException;
@@ -117,7 +118,13 @@ class Redis extends Connector
             }
         };
         
-        return new self($redis, $config['queue'], $config['retry_after'] ?? 60, $config['block_for'] ?? null, $config['prefix'] ?? '');
+        return new self(
+            $redis,
+            ArrayHelper::get($config, 'queue') ?: 'default',
+            ArrayHelper::get($config, 'retry_after', 60) ?: 60,
+            $config['block_for'] ?? null,
+            $config['prefix'] ?? ''
+        );
     }
     
     

@@ -2,6 +2,7 @@
 
 namespace BusyPHP\queue\connector;
 
+use BusyPHP\helper\ArrayHelper;
 use Carbon\Carbon;
 use stdClass;
 use think\Db;
@@ -57,9 +58,14 @@ class Database extends Connector
     
     public static function __make(Db $db, $config)
     {
-        $connection = $db->connect($config['connection'] ?? null);
+        $connection = $db->connect(ArrayHelper::get($config, 'connection'));
         
-        return new self($connection, $config['table'], $config['queue'], $config['retry_after'] ?? 60);
+        return new self(
+            $connection,
+            ArrayHelper::get($config, 'table') ?: 'plugin_queue_jobs',
+            ArrayHelper::get($config, 'queue') ?: 'default',
+            ArrayHelper::get($config, 'retry_after', 60) ?: 60
+        );
     }
     
     
